@@ -193,6 +193,9 @@ export default function Home() {
   >(null)
   const [moveablePositions, setMoveablePositions] =
     useState<Array<Array<number>>>([])
+  const [turn, setTurn] = useState<'white' | 'black'>(
+    'white',
+  )
 
   // handler: when user click on a piece, calculate the moveable positions
   // and highlight them
@@ -278,6 +281,12 @@ export default function Home() {
             position,
             pieceForward,
           )
+        case 'Bia':
+          return getBiaMoveablePositions(
+            pieceId,
+            position,
+            pieceForward,
+          )
         // case 'Met':
         //   return getMetMoveablePositions(
         //     letterIndex,
@@ -295,11 +304,6 @@ export default function Home() {
         //   )
         // case 'Khon':
         //   return getKhonMoveablePositions(
-        //     letterIndex,
-        //     numberIndex,
-        //   )
-        // case 'Bia':
-        //   return getBiaMoveablePositions(
         //     letterIndex,
         //     numberIndex,
         //   )
@@ -375,6 +379,56 @@ export default function Home() {
     [chessBoard],
   )
 
+  const getBiaMoveablePositions = useCallback(
+    (
+      pieceId: string,
+      position: Array<number>,
+      pieceForward: 'up' | 'down',
+    ) => {
+      const moveablePositions: Array<Array<number>> = []
+      debugger
+
+      // if move up, get the upper row
+      if (pieceForward === 'up') {
+        const upperRow = chessBoard[position[0] - 1] || []
+        if (upperRow.length > 0) {
+          // get the 1 positions in front of the piece
+          const threePositionsInFront = upperRow.slice(
+            position[1],
+            position[1] + 1,
+          )
+
+          moveablePositions.push(
+            ...threePositionsInFront.map((_, i) => [
+              position[0] - 1,
+              position[1] + i,
+            ]),
+          )
+        }
+      } else if (pieceForward === 'down') {
+        // if move down, get the lower row
+        const lowerRow = chessBoard[position[0] + 1] || []
+        if (lowerRow.length > 0) {
+          // get the 1 positions behind the piece
+          const threePositionsBehind = lowerRow.slice(
+            position[1],
+            position[1] + 1,
+          )
+
+          moveablePositions.push(
+            ...threePositionsBehind.map((_, i) => [
+              position[0] + 1,
+              position[1] + i,
+            ]),
+          )
+        }
+      }
+
+      return moveablePositions
+    },
+    [chessBoard],
+  )
+
   // handler: when user click on a moveable position, move the piece to that position
   // and clear the moveable positions
   const handleMovePiece = useCallback(
@@ -396,13 +450,16 @@ export default function Home() {
       // set the new chess board
       setChessBoard(newChessBoard)
 
+      // set the new turn
+      setTurn(turn === 'white' ? 'black' : 'white')
+
       // clear the moveable positions
       setMoveablePositions([])
 
       // clear the selected piece
       setSelectedPieceId(null)
     },
-    [chessBoard, selectedPieceId],
+    [chessBoard, selectedPieceId, turn],
   )
 
   return (
@@ -420,6 +477,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
+        <div style={{ fontSize: 24, fontWeight: 600 }}>
+          {`Turn: ${turn}`}
+        </div>
         <div
           style={{
             fontSize: 24,
@@ -466,9 +526,17 @@ export default function Home() {
                     )
                   : null
 
+                // check if the piece is at its turn
+                const isPieceAtTurn =
+                  pieceObject &&
+                  turn ===
+                    (pieceObject.id.includes('white')
+                      ? 'white'
+                      : 'black')
+
+                // check if the position is moveable
                 let isMoveablePosition = false
                 if (moveablePositions.length > 0) {
-                  // if the position is moveable, add a border
                   isMoveablePosition =
                     moveablePositions.some(
                       (item) =>
@@ -485,7 +553,7 @@ export default function Home() {
                       border:
                         pieceObject &&
                         selectedPieceId === pieceObject.id
-                          ? '2px dashed #000'
+                          ? '2px dashed yellow'
                           : '2px solid #000',
                       backgroundColor: '#cb8a47',
                       height: 80,
@@ -502,9 +570,12 @@ export default function Home() {
                         height={40}
                         src={pieceObject.image}
                         style={{
-                          cursor: 'pointer',
+                          cursor: isPieceAtTurn
+                            ? 'pointer'
+                            : '',
                         }}
                         onClick={() => {
+                          if (!isPieceAtTurn) return
                           handleSelectPiece(pieceObject.id)
                           handleNewMovablePositions(
                             pieceObject.id,
