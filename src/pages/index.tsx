@@ -193,8 +193,8 @@ export default function Home() {
   >(null)
   const [moveablePositions, setMoveablePositions] =
     useState<Array<Array<number>>>([])
-  const [turn, setTurn] = useState<'white' | 'black'>(
-    'white',
+  const [turn, setTurn] = useState<'WHITE' | 'BLACK'>(
+    'WHITE',
   )
 
   // handler: when user click on a piece, calculate the moveable positions
@@ -208,11 +208,11 @@ export default function Home() {
   const handleNewMovablePositions = useCallback(
     (pieceId: string) => {
       // const: bottom pieces are white
-      const bottomPiecesColor = 'white'
+      const bottomPiecesColor = 'WHITE'
 
       // find the piece color
       const pieceForward = pieceId.includes(
-        bottomPiecesColor,
+        bottomPiecesColor.toLocaleLowerCase(),
       )
         ? 'up'
         : 'down'
@@ -451,7 +451,7 @@ export default function Home() {
       setChessBoard(newChessBoard)
 
       // set the new turn
-      setTurn(turn === 'white' ? 'black' : 'white')
+      setTurn(turn === 'WHITE' ? 'BLACK' : 'WHITE')
 
       // clear the moveable positions
       setMoveablePositions([])
@@ -529,7 +529,7 @@ export default function Home() {
                 // check if the piece is at its turn
                 const isPieceAtTurn =
                   pieceObject &&
-                  turn ===
+                  turn.toLowerCase() ===
                     (pieceObject.id.includes('white')
                       ? 'white'
                       : 'black')
