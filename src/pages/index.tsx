@@ -227,6 +227,18 @@ export default function Home() {
     'WHITE' | 'BLACK' | null
   >(null)
 
+  // effect: initial load your color from local storage
+  // effect: โหลดสีของคุณจาก local storage
+  useEffect(() => {
+    const yourColorFromLocalStorage =
+      localStorage.getItem('yourColor')
+    if (yourColorFromLocalStorage) {
+      setYourColor(
+        yourColorFromLocalStorage as 'WHITE' | 'BLACK',
+      )
+    }
+  }, [])
+
   // effect: when the chess board is changed,
   // change chessBoardHistory
   useEffect(() => {
