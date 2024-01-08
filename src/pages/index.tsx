@@ -637,7 +637,7 @@ export default function Home() {
             margin: 0,
             color: '#fff',
           }}>
-          {`ตาเดิน: ${turn}`}
+          {`ตาเดิน: ${turn === 'WHITE' ? 'ขาว' : 'ดำ'}`}
         </Typography.Title>
         <Typography.Title
           level={4}
