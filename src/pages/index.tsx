@@ -2,6 +2,7 @@ import {
   Button,
   Col,
   Image,
+  Radio,
   Row,
   Space,
   Typography,
@@ -649,6 +650,26 @@ export default function Home() {
             yourColor === 'WHITE' ? 'ขาว' : 'ดำ'
           }`}
         </Typography.Title>
+        <Radio.Group
+          value={yourColor}
+          onChange={(e) => {
+            setYourColor(e.target.value)
+          }}>
+          <Radio
+            value="WHITE"
+            style={{
+              color: '#fff',
+            }}>
+            ขาว
+          </Radio>
+          <Radio
+            value="BLACK"
+            style={{
+              color: '#fff',
+            }}>
+            ดำ
+          </Radio>
+        </Radio.Group>
         <Typography.Title
           level={4}
           style={{
