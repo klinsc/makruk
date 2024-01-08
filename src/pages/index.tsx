@@ -740,6 +740,13 @@ export default function Home() {
                       ? 'white'
                       : 'black')
 
+                // check if yourTurn
+                // ตรวจสอบว่าเป็นตาของคุณหรือไม่
+                const isYourTurn =
+                  yourColor &&
+                  turn.toLowerCase() ===
+                    yourColor.toLowerCase()
+
                 // check if the position is moveable
                 let isMoveablePosition = false
                 if (moveablePositions.length > 0) {
@@ -823,6 +830,9 @@ export default function Home() {
                         }}
                         onClick={() => {
                           if (!isPieceAtTurn) return
+
+                          // ถ้าไม่ใช่ตาของคุณ ไม่ต้องทำอะไร
+                          if (!isYourTurn) return
 
                           // if click on the same piece, deselect it
                           if (
