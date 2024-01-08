@@ -239,6 +239,14 @@ export default function Home() {
     }
   }, [])
 
+  // effect: when your color is changed, save it to local storage
+  // effect: เมื่อสีของคุณเปลี่ยน บันทึกลง local storage
+  useEffect(() => {
+    if (yourColor) {
+      localStorage.setItem('yourColor', yourColor)
+    }
+  }, [yourColor])
+
   // effect: when the chess board is changed,
   // change chessBoardHistory
   useEffect(() => {
