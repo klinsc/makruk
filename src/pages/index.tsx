@@ -750,11 +750,13 @@ export default function Home() {
                           cursor: isPieceAtTurn
                             ? 'pointer'
                             : '',
+
                           // shows animation if the piece is at its turn
+                          // แสดง animation ถ้าเป็นตาของหมากที่ถูกเลือก
                           animation:
                             !selectedPieceId &&
                             isPieceAtTurn
-                              ? 'pieceMoveable 1s infinite'
+                              ? 'pieceMoveable 2s linear infinite'
                               : '',
 
                           // rotate 3d if the piece is selected
