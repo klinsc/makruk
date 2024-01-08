@@ -1,0 +1,31 @@
+body {
+  background: #000;
+}
+
+/* animation for pieceMoveable */
+@keyframes pieceMoveable {
+  /* move up & down */
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* animation for selectedPiece */
+@keyframes pieceSelected {
+  /* animate border */
+  0% {
+    border: 4px dashed #000;
+  }
+  50% {
+    border: 4px dashed #fff;
+  }
+  100% {
+    border: 4px dashed #000;
+  }
+}

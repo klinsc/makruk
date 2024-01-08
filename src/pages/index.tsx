@@ -1,6 +1,16 @@
-import { Col, Image, Row, Space } from 'antd'
+import {
+  Button,
+  Col,
+  Image,
+  Row,
+  Space,
+  Typography,
+} from 'antd'
 import Head from 'next/head'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
 
 const whitePieces = [
   {
@@ -103,99 +113,156 @@ const blackPieces = [
   })),
 ]
 
+const defaultChessBoard = [
+  [
+    'black-ruea-1',
+    'black-ma-1',
+    'black-khon-1',
+    'black-met',
+    'black-khun',
+    'black-khon-2',
+    'black-ma-2',
+    'black-ruea-2',
+  ],
+  [
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+  ],
+  [
+    'black-bia-1',
+    'black-bia-2',
+    'black-bia-3',
+    'black-bia-4',
+    'black-bia-5',
+    'black-bia-6',
+    'black-bia-7',
+    'black-bia-8',
+  ],
+  [
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+  ],
+  [
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+  ],
+  [
+    'white-bia-1',
+    'white-bia-2',
+    'white-bia-3',
+    'white-bia-4',
+    'white-bia-5',
+    'white-bia-6',
+    'white-bia-7',
+    'white-bia-8',
+  ],
+  [
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+    'blank',
+  ],
+  [
+    'white-ruea-1',
+    'white-ma-1',
+    'white-khon-1',
+    'white-khun',
+    'white-met',
+    'white-khon-2',
+    'white-ma-2',
+    'white-ruea-2',
+  ],
+]
+
 export default function Home() {
+  // state: ตำแหน่งของหมากแต่ละ id บนกระดาน
   const [chessBoard, setChessBoard] = useState<
     Array<Array<string | null>>
-  >([
-    [
-      'black-ruea-1',
-      'black-ma-1',
-      'black-khon-1',
-      'black-met',
-      'black-khun',
-      'black-khon-2',
-      'black-ma-2',
-      'black-ruea-2',
-    ],
-    [
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-    ],
-    [
-      'black-bia-1',
-      'black-bia-2',
-      'black-bia-3',
-      'black-bia-4',
-      'black-bia-5',
-      'black-bia-6',
-      'black-bia-7',
-      'black-bia-8',
-    ],
-    [
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-    ],
-    [
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-    ],
-    [
-      'white-bia-1',
-      'white-bia-2',
-      'white-bia-3',
-      'white-bia-4',
-      'white-bia-5',
-      'white-bia-6',
-      'white-bia-7',
-      'white-bia-8',
-    ],
-    [
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-      'blank',
-    ],
-    [
-      'white-ruea-1',
-      'white-ma-1',
-      'white-khon-1',
-      'white-khun',
-      'white-met',
-      'white-khon-2',
-      'white-ma-2',
-      'white-ruea-2',
-    ],
-  ])
+  >([...defaultChessBoard])
+  // state: ประวัติของตำแหน่งของหมากแต่ละ id บนกระดาน ในแต่ละเทิร์น
+  const [chessBoardHistory, setChessBoardHistory] =
+    useState<Array<Array<Array<string | null>>> | null>(
+      null,
+    )
+  // state: id ของหมากที่ถูกเลือก
   const [selectedPieceId, setSelectedPieceId] = useState<
     string | null
   >(null)
+  // state: ช่องที่เดินได้ของหมากที่ถูกเลือก
   const [moveablePositions, setMoveablePositions] =
     useState<Array<Array<number>>>([])
+  // state: ช่องที่กินได้ของหมากที่ถูกเลือก
+  const [eatablePositions, setEatablePositions] = useState<
+    Array<Array<number>>
+  >([])
+
+  // state: ตาเดินของสีขาวหรือดำ
   const [turn, setTurn] = useState<'WHITE' | 'BLACK'>(
     'WHITE',
   )
+
+  // effect: when the chess board is changed,
+  // change chessBoardHistory
+  useEffect(() => {
+    const newChessBoardHistory = chessBoardHistory
+      ? [...chessBoardHistory, chessBoard]
+      : [chessBoard]
+    setChessBoardHistory(newChessBoardHistory)
+  }, [chessBoard])
+
+  // handler: reset the chessboard
+  const handleResetChessBoard = useCallback(() => {
+    setChessBoard([...defaultChessBoard])
+    setChessBoardHistory(null)
+    localStorage.removeItem('chessBoardHistory')
+  }, [])
+
+  // handler: save the chessbord history to local storage
+  const handleSaveChessBoardHistory = useCallback(() => {
+    localStorage.setItem(
+      'chessBoardHistory',
+      JSON.stringify(chessBoardHistory),
+    )
+  }, [chessBoardHistory])
+
+  // handler: load the chessbord history from local storage
+  const handleLoadChessBoardHistory = useCallback(() => {
+    const chessBoardHistoryFromLocalStorage =
+      localStorage.getItem('chessBoardHistory')
+    if (chessBoardHistoryFromLocalStorage) {
+      const chessBoardHistory = JSON.parse(
+        chessBoardHistoryFromLocalStorage,
+      )
+      setChessBoardHistory(chessBoardHistory)
+
+      // set the chess board to the last one
+      setChessBoard(
+        chessBoardHistory[chessBoardHistory.length - 1],
+      )
+    }
+  }, [])
 
   // handler: when user click on a piece, calculate the moveable positions
   // and highlight them
@@ -253,9 +320,32 @@ export default function Home() {
           return true
         },
       )
-
       // set the moveable positions
       setMoveablePositions(filteredSameColor)
+
+      // คำนวณหาหมากของสีตรงข้ามจาก moveablePositions
+      const newEatablePositions = moveablePositions.filter(
+        (item) => {
+          const itemId = chessBoard[item[0]][item[1]]
+          if (itemId === 'blank') return false
+
+          if (itemId) {
+            const pieceColor = itemId.includes('white')
+              ? 'white'
+              : 'black'
+            const selectedPieceColor = pieceId.includes(
+              'white',
+            )
+              ? 'white'
+              : 'black'
+            return pieceColor !== selectedPieceColor
+          }
+          return false
+        },
+      )
+
+      // set the eatable positions
+      setEatablePositions(newEatablePositions)
     },
     [chessBoard],
   )
@@ -321,7 +411,6 @@ export default function Home() {
       pieceForward: 'up' | 'down',
     ) => {
       const moveablePositions: Array<Array<number>> = []
-      debugger
 
       // the Khun ignores the pieceForward
       // get the upper row
@@ -386,7 +475,6 @@ export default function Home() {
       pieceForward: 'up' | 'down',
     ) => {
       const moveablePositions: Array<Array<number>> = []
-      debugger
 
       // if move up, get the upper row
       if (pieceForward === 'up') {
@@ -433,7 +521,6 @@ export default function Home() {
   // and clear the moveable positions
   const handleMovePiece = useCallback(
     (position: Array<number>) => {
-      debugger
       // set new chess board
       const newChessBoard = chessBoard.map((item, i) =>
         item.map((subItem, j) => {
@@ -462,13 +549,49 @@ export default function Home() {
     [chessBoard, selectedPieceId, turn],
   )
 
+  // handler: when user click on a eatable position, eat the piece
+  // and move the piece to that position
+  // and clear the moveable positions
+  const handleEatPiece = useCallback(
+    (position: Array<number>) => {
+      // set new chess board
+      const newChessBoard = chessBoard.map((item, i) =>
+        item.map((subItem, j) => {
+          if (subItem === selectedPieceId) {
+            return null
+          }
+          if (i === position[0] && j === position[1]) {
+            return selectedPieceId
+          }
+          return subItem
+        }),
+      )
+
+      // set the new chess board
+      setChessBoard(newChessBoard)
+
+      // set the new turn
+      setTurn(turn === 'WHITE' ? 'BLACK' : 'WHITE')
+
+      // clear the moveable positions
+      setMoveablePositions([])
+
+      // clear the eatable positions
+      setEatablePositions([])
+
+      // clear the selected piece
+      setSelectedPieceId(null)
+    },
+    [chessBoard, selectedPieceId, turn],
+  )
+
   return (
     <>
       <Head>
-        <title>Create Next App</title>
+        <title>ตัวอย่างหมากรุกไทย</title>
         <meta
           name="description"
-          content="Generated by create next app"
+          content="ตัวอย่างสำหรับใช้เรียนการเขียนเกมหมากรุกไทยด้วย React.js และ Next.js"
         />
         <meta
           name="viewport"
@@ -476,28 +599,56 @@ export default function Home() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        <div style={{ fontSize: 24, fontWeight: 600 }}>
-          {`Turn: ${turn}`}
-        </div>
-        <div
+      <main className={`${inter.className}`}>
+        <Typography.Title
+          level={1}
           style={{
-            fontSize: 24,
-            fontWeight: 600,
-            marginBottom: 16,
-          }}>{`Selected piece: ${selectedPieceId}`}</div>
-        <div
+            color: '#fff',
+          }}>
+          หมากรุกไทย
+        </Typography.Title>
+        <Typography.Title
+          level={4}
           style={{
-            fontSize: 24,
-            fontWeight: 600,
-            marginBottom: 16,
-          }}>{`Moveable positions: ${JSON.stringify(
-          moveablePositions,
-        )}`}</div>
+            margin: 0,
+            color: '#fff',
+          }}>
+          {`ตาเดิน: ${turn}`}
+        </Typography.Title>
+        <Typography.Title
+          level={4}
+          style={{
+            margin: 0,
+            color: '#fff',
+          }}>
+          {`หมากที่ถูกเลือก: ${selectedPieceId}`}
+        </Typography.Title>
+        <Typography.Title
+          level={4}
+          style={{
+            margin: 0,
+            color: '#fff',
+          }}>
+          {`ช่องที่เดินได้: ${JSON.stringify(
+            moveablePositions,
+          )}`}
+        </Typography.Title>
+        <Typography.Title
+          level={4}
+          style={{
+            margin: 0,
+            color: '#fff',
+          }}>
+          {`ช่องที่กินได้: ${JSON.stringify(
+            eatablePositions,
+          )}`}
+        </Typography.Title>
+
         <div
           style={{
             width: 640,
             backgroundColor: '#fff',
+            border: '1px solid #000',
           }}>
           {Array.from({
             length: 8,
@@ -544,38 +695,89 @@ export default function Home() {
                     )
                 }
 
+                // check if the position is eatable
+                let isEatablePosition = false
+                if (eatablePositions.length > 0) {
+                  isEatablePosition = eatablePositions.some(
+                    (item) =>
+                      item[0] === i && item[1] === j,
+                  )
+                }
+
                 return (
                   <Col
                     key={`${letter}-${8 - i}`}
                     span={3}
                     style={{
-                      // if the piece is selected, add a border
+                      // if the piece is selected, add a bigger dashed border
                       border:
                         pieceObject &&
                         selectedPieceId === pieceObject.id
-                          ? '2px dashed yellow'
+                          ? '4px dashed #000'
                           : '2px solid #000',
-                      backgroundColor: '#cb8a47',
+
                       height: 80,
                       width: 80,
                       display: 'flex',
                       justifyContent: 'center',
                       alignItems: 'center',
+
+                      // add shadow if the piece is selected
+                      boxShadow:
+                        pieceObject &&
+                        selectedPieceId === pieceObject.id
+                          ? '0 0 10px 5px #000'
+                          : '',
                     }}>
                     {pieceObject && (
                       <Image
                         preview={false}
                         alt="chess"
-                        width={40}
-                        height={40}
+                        // if the piece is selected, make it bigger
+                        width={
+                          selectedPieceId === pieceObject.id
+                            ? 80
+                            : 66
+                        }
+                        height={
+                          selectedPieceId === pieceObject.id
+                            ? 80
+                            : 66
+                        }
                         src={pieceObject.image}
                         style={{
+                          // shows the cursor if the piece is at its turn
                           cursor: isPieceAtTurn
                             ? 'pointer'
                             : '',
+                          // shows animation if the piece is at its turn
+                          animation:
+                            !selectedPieceId &&
+                            isPieceAtTurn
+                              ? 'pieceMoveable 1s infinite'
+                              : '',
+
+                          // rotate 3d if the piece is selected
+                          transform:
+                            selectedPieceId ===
+                            pieceObject.id
+                              ? 'rotate3d(0,1,1, 20deg)'
+                              : '',
                         }}
                         onClick={() => {
                           if (!isPieceAtTurn) return
+
+                          // if click on the same piece, deselect it
+                          if (
+                            selectedPieceId ===
+                            pieceObject.id
+                          ) {
+                            setSelectedPieceId(null)
+                            setMoveablePositions([])
+                            setEatablePositions([])
+                            return
+                          }
+
                           handleSelectPiece(pieceObject.id)
                           handleNewMovablePositions(
                             pieceObject.id,
@@ -602,12 +804,75 @@ export default function Home() {
                         />
                       )
                     }
-                    {<Space>{`${i},${j}`}</Space>}
+                    {
+                      // if the position is eatable, add a border
+                      isEatablePosition && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            height: 66,
+                            width: 66,
+                            borderRadius: '50%',
+                            backgroundColor:
+                              'rgba(0,255,0,.5)',
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => {
+                            handleEatPiece([i, j])
+                          }}
+                        />
+                      )
+                    }
+                    {/* {<div>{`${i},${j}`}</div>} */}
                   </Col>
                 )
               })}
             </Row>
           ))}
+        </div>
+
+        {/* Reset, Save & Load chessboard */}
+        <div
+          style={{
+            width: 640,
+            border: '1px solid #000',
+          }}>
+          <Space style={{ margin: '1rem' }}>
+            <Button onClick={() => handleResetChessBoard()}>
+              Reset
+            </Button>
+            <Button
+              onClick={() => handleSaveChessBoardHistory()}>
+              Save
+            </Button>
+            <Button
+              onClick={() => handleLoadChessBoardHistory()}>
+              Load
+            </Button>
+          </Space>
+          <Typography.Title
+            level={4}
+            style={{
+              margin: 0,
+              color: '#fff',
+            }}>
+            History
+          </Typography.Title>
+          {
+            // show the history
+            chessBoardHistory &&
+              chessBoardHistory.map((item, i) => (
+                <Typography.Title
+                  key={i}
+                  level={5}
+                  style={{
+                    margin: 0,
+                    color: '#fff',
+                  }}>
+                  {JSON.stringify(item)}
+                </Typography.Title>
+              ))
+          }
         </div>
       </main>
     </>
