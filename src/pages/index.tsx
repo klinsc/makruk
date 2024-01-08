@@ -704,6 +704,12 @@ export default function Home() {
             width: 640,
             backgroundColor: '#fff',
             border: '1px solid #000',
+
+            // rotate the chessboard according to your color, your color is always at the bottom
+            transform:
+              yourColor === 'WHITE'
+                ? 'rotate(0deg)'
+                : 'rotate(180deg)',
           }}>
           {Array.from({
             length: 8,
@@ -813,19 +819,20 @@ export default function Home() {
                             ? 'pointer'
                             : '',
 
+                          // rotate the chessboard according to your color, your color is always at the bottom
+                          transform:
+                            yourColor === 'WHITE'
+                              ? 'rotate(0deg)'
+                              : 'rotate(180deg)',
+
                           // shows animation if the piece is at its turn
                           // แสดง animation ถ้าเป็นตาของหมากที่ถูกเลือก
                           animation:
                             !selectedPieceId &&
                             isPieceAtTurn
-                              ? 'pieceMoveable 2s linear infinite'
-                              : '',
-
-                          // rotate 3d if the piece is selected
-                          transform:
-                            selectedPieceId ===
-                            pieceObject.id
-                              ? 'rotate3d(0,1,1, 20deg)'
+                              ? yourColor === 'WHITE'
+                                ? 'pieceMoveable 2s linear infinite'
+                                : 'pieceMoveableRotate 2s linear infinite'
                               : '',
                         }}
                         onClick={() => {
