@@ -15,6 +15,18 @@ body {
     transform: translateY(0);
   }
 }
+@keyframes pieceMoveableRotate {
+  /* move up & down */
+  0% {
+    transform: translateY(0) rotate(180deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(180deg);
+  }
+  100% {
+    transform: translateY(0) rotate(180deg);
+  }
+}
 
 /* animation for selectedPiece */
 @keyframes pieceSelected {
