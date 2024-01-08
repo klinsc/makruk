@@ -222,6 +222,10 @@ export default function Home() {
   const [turn, setTurn] = useState<'WHITE' | 'BLACK'>(
     'WHITE',
   )
+  // state: สีหมากของคุณ
+  const [yourColor, setYourColor] = useState<
+    'WHITE' | 'BLACK' | null
+  >(null)
 
   // effect: when the chess board is changed,
   // change chessBoardHistory
