@@ -645,6 +645,16 @@ export default function Home() {
             margin: 0,
             color: '#fff',
           }}>
+          {`สีของคุณ: ${
+            yourColor === 'WHITE' ? 'ขาว' : 'ดำ'
+          }`}
+        </Typography.Title>
+        <Typography.Title
+          level={4}
+          style={{
+            margin: 0,
+            color: '#fff',
+          }}>
           {`หมากที่ถูกเลือก: ${selectedPieceId}`}
         </Typography.Title>
         <Typography.Title
