@@ -689,8 +689,17 @@ export default function Home() {
               level={1}
               style={{
                 color: '#fff',
+                marginBottom: 0,
               }}>
               หมากรุกไทย
+            </Typography.Title>
+            <Typography.Title
+              level={5}
+              style={{
+                color: '#fff',
+                marginTop: 0,
+              }}>
+              ตัวอย่าง จะเดินได้เฉพาะขุนและเบี้ย
             </Typography.Title>
           </Col>
 
