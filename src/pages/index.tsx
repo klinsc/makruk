@@ -288,20 +288,28 @@ export default function Home() {
   }, [chessBoardHistory])
 
   // handler: load the chessbord history from local storage
+  // handler: โหลดประวัติการเดินหมากจาก local storage
   const handleLoadChessBoardHistory = useCallback(() => {
+    // โหลดประวัติการเดินหมากจาก local storage โดยใช้ชื่อ chessBoardHistory
     const chessBoardHistoryFromLocalStorage =
       localStorage.getItem('chessBoardHistory')
+    // ถ้ายังไม่เคยบันทึกลงใน local storage จะได้ค่าเป็น null เลยต้องเช็คด้วยเงื่อนไข if
+    // จะเข้าเงื่อนไข if แบบนี้เมื่อ chessBoardHistoryFromLocalStorage ไม่ใช่ null หรือ undefined
     if (chessBoardHistoryFromLocalStorage) {
+      // แปลงค่าจาก string กลับเป็น array ด้วย JSON.parse (คู่ตรงข้ามของ JSON.stringify)
       const chessBoardHistory = JSON.parse(
         chessBoardHistoryFromLocalStorage,
       )
+      // เซ็ต chessBoardHistory ใหม่ ด้วยค่าที่โหลดมาจาก local storage
       setChessBoardHistory(chessBoardHistory)
 
       // set the chess board to the last one
+      // เซ็ต chessBoard ใหม่ ด้วยค่าตำแหน่งหมากล่าสุดในประวัติการเดินหมาก
       setChessBoard(
         chessBoardHistory[chessBoardHistory.length - 1],
       )
     }
+    // dependency: ไม่มี
   }, [])
 
   // handler: when user click on a piece, calculate the moveable positions
