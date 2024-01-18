@@ -337,20 +337,24 @@ export default function Home() {
     // dependency: ไม่มี
   }, [])
 
-  // handler: when user click on a piece, calculate the moveable positions
-  // and highlight them
+  // handler: เมื่อผู้ใช้คลิกที่หมาก เซ็ตหมากที่ถูกเลือกไว้ที่สเตท selectedPieceId
   const handleSelectPiece = useCallback(
     (pieceId: string) => {
       setSelectedPieceId(pieceId)
     },
     [],
   )
+
+  // handler: คำนวณหาช่องที่เดินได้ของหมากที่ถูกเลือก (id หมากที่ถูกเลือกจะอยู่ใน selectedPieceId)
   const handleNewMovablePositions = useCallback(
     (pieceId: string) => {
-      // const: bottom pieces are white
+      // ตอนที่คำนวณ เราจะกำหนดทิศทางการคำนวณหาช่องที่เดินได้ของหมาก
+      // โดยเราจะมองให้สีขาวเป็นด้านล่างเสมอ แต่ตอนที่แสดงผลจะใช้
+      // transform: rotate(180deg) กับผู้เล่นสีดำ เพื่อให้สีดำดูเหมือนว่าเป็นด้านล่าง
       const bottomPiecesColor = 'WHITE'
 
       // find the piece color
+      // หาสีของหมากที่ถูกเลือก
       const pieceForward = pieceId.includes(
         bottomPiecesColor.toLocaleLowerCase(),
       )
@@ -358,6 +362,7 @@ export default function Home() {
         : 'down'
 
       // get the position of the piece in i,j
+      // หาตำแหน่ง i,j บนกระดารของหมากที่ถูกเลือก
       const position = chessBoard
         .filter((item) => item.includes(pieceId))
         .map((item) => [
@@ -367,36 +372,27 @@ export default function Home() {
       const positionIndex = [position[1], position[0]]
 
       // get the moveable positions
+      // หาช่องที่เดินได้ของหมากที่ถูกเลือก
       const moveablePositions = getMoveablePositions(
         pieceId,
         positionIndex,
         pieceForward,
       )
 
-      // filter out the positions that are occupied by the same color
+      // กรองช่องที่เดินได้ โดยเลือกเอาเฉพาะช่องที่ id เป็น blank
       const filteredSameColor = moveablePositions.filter(
         (item) => {
           const pieceId = chessBoard[item[0]][item[1]]
           if (pieceId === 'blank') return true
 
-          if (pieceId) {
-            const pieceColor = pieceId.includes('white')
-              ? 'white'
-              : 'black'
-            const selectedPieceColor = pieceId.includes(
-              'white',
-            )
-              ? 'white'
-              : 'black'
-            return pieceColor !== selectedPieceColor
-          }
-          return true
+          return false
         },
       )
       // set the moveable positions
+      // เซ็ตช่องที่เดินได้ของหมากที่ถูกเลือกไปที่สเตท moveablePositions
       setMoveablePositions(filteredSameColor)
 
-      // คำนวณหาหมากของสีตรงข้ามจาก moveablePositions
+      // คำนวณหาหมากของสีตรงข้ามจากตัวแปร moveablePositions
       const newEatablePositions = moveablePositions.filter(
         (item) => {
           const itemId = chessBoard[item[0]][item[1]]
@@ -418,11 +414,14 @@ export default function Home() {
       )
 
       // set the eatable positions
+      // เซ็ตช่องที่กินได้ของหมากที่ถูกเลือกไปที่สเตท eatablePositions
       setEatablePositions(newEatablePositions)
     },
+    // dependency: อัพเดท chessBoard ใหม่ทุกครั้งที่มีการเปลี่ยนแปลง
     [chessBoard],
   )
 
+  // เทียบฟังก์ชันคำนวณหาช่องที่เดินได้ของชนิดของหมากที่ถูกเลือก
   const getMoveablePositions = useCallback(
     (
       pieceId: string,
@@ -477,6 +476,7 @@ export default function Home() {
     [],
   )
 
+  // คำนวณหาช่องที่เดินได้ของหมากขุน
   const getKhunMoveablePositions = useCallback(
     (
       pieceId: string,
@@ -541,6 +541,7 @@ export default function Home() {
     [chessBoard],
   )
 
+  // คำนวณหาช่องที่เดินได้ของหมากเบี้ย
   const getBiaMoveablePositions = useCallback(
     (
       pieceId: string,
@@ -592,6 +593,7 @@ export default function Home() {
 
   // handler: when user click on a moveable position, move the piece to that position
   // and clear the moveable positions
+  // handler: เมื่อผู้ใช้คลิกที่ช่องที่เดินได้ เซ็ตตำแหน่งหมากใหม่ และลบช่องที่เดินได้ทิ้ง
   const handleMovePiece = useCallback(
     (position: Array<number>) => {
       // set new chess board
@@ -625,6 +627,7 @@ export default function Home() {
   // handler: when user click on a eatable position, eat the piece
   // and move the piece to that position
   // and clear the moveable positions
+  // handler: เมื่อผู้ใช้คลิกที่ช่องที่กินได้ เซ็ตตำแหน่งหมากใหม่ และลบช่องที่เดินได้ทิ้ง
   const handleEatPiece = useCallback(
     (position: Array<number>) => {
       // set new chess board
@@ -661,10 +664,10 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>ตัวอย่างหมากรุกไทย</title>
+        <title>ตัวอย่างหมากรุกไทยออนไลน์</title>
         <meta
           name="description"
-          content="ตัวอย่างสำหรับใช้เรียนการเขียนเกมหมากรุกไทยด้วย React.js และ Next.js"
+          content="ตัวอย่างสำหรับใช้เรียนการเขียนเกมหมากรุกไทยออนไลน์ด้วย React.js และ Next.js"
         />
         <meta
           name="viewport"
