@@ -1,3 +1,4 @@
+// ไลบรารี UI ของ Ant Design
 import {
   Button,
   Col,
@@ -6,53 +7,67 @@ import {
   Space,
   Typography,
 } from 'antd'
-import Head from 'next/head'
+// ไลบรารีสำหรับใช้งาน React
 import { useCallback, useEffect, useState } from 'react'
+// ไลบรารีสำหรับการใส่แท็ก <head> ในหน้าเว็บสำหรับเปลี่ยนชื่อหน้าเว็บ และเพิ่มคำอธิบาย และ meta tag อื่นๆ เพิ่มประสิทธิภาพในการค้นหาหรือ SEO
+import Head from 'next/head'
+// ไลบรารีสำหรับใช้งานฟอนต์จาก Google Fonts ด้วย Next.js
 import { Inter } from 'next/font/google'
 
+// ดึงฟอนต์ Inter เฉพาะรูปลักษ์ละติน มาใช้งาน (จะไม่มีตัวอักษรไทย)
 const inter = Inter({ subsets: ['latin'] })
 
+// อาเรย์ของ id ชื่อ และรูปภาพของหมากสีดำ
 const whitePieces = [
   {
+    // ขุนขาว
     id: 'white-khun',
     name: 'Khun',
     image: '/chesses/white_khun.svg',
   },
   {
+    // เม็ดขาว
     id: 'white-met',
     name: 'Met',
     image: '/chesses/white_met.svg',
   },
   {
+    // ม้าขาวตัวที่ 1
     id: 'white-ma-1',
     name: 'Ma',
     image: '/chesses/white_ma.svg',
   },
   {
+    // ม้าขาวตัวที่ 2
     id: 'white-ma-2',
     name: 'Ma',
     image: '/chesses/white_ma.svg',
   },
   {
+    // เรือขาวตัวที่ 1
     id: 'white-ruea-1',
     name: 'Ruea',
     image: '/chesses/white_ruea.svg',
   },
   {
+    // เรือขาวตัวที่ 2
     id: 'white-ruea-2',
     name: 'Ruea',
     image: '/chesses/white_ruea.svg',
   },
   {
+    // โคนขาวตัวที่ 1
     id: 'white-khon-1',
     name: 'Khon',
     image: '/chesses/white_khon.svg',
   },
   {
+    // โคนขาวตัวที่ 2
     id: 'white-khon-2',
     name: 'Khon',
     image: '/chesses/white_khon.svg',
   },
+  // ใช้ array spread operator สร้างอาเรย์ของหมากเบี้ยทั้ง 8 ตัว
   ...Array.from({
     length: 8,
   }).map((_, i) => ({
@@ -63,47 +78,57 @@ const whitePieces = [
   ,
 ]
 
+// อาเรย์ของ id ชื่อ และรูปภาพของหมากสีดำ
 const blackPieces = [
   {
+    // ขุนดำ
     id: 'black-khun',
     name: 'Khun',
     image: '/chesses/black_khun.svg',
   },
   {
+    // เม็ดดำ
     id: 'black-met',
     name: 'Met',
     image: '/chesses/black_met.svg',
   },
   {
+    // ม้าดำตัวที่ 1
     id: 'black-ma-1',
     name: 'Ma',
     image: '/chesses/black_ma.svg',
   },
   {
+    // ม้าดำตัวที่ 2
     id: 'black-ma-2',
     name: 'Ma',
     image: '/chesses/black_ma.svg',
   },
   {
+    // เรือดำตัวที่ 1
     id: 'black-ruea-1',
     name: 'Ruea',
     image: '/chesses/black_ruea.svg',
   },
   {
+    // เรือดำตัวที่ 2
     id: 'black-ruea-2',
     name: 'Ruea',
     image: '/chesses/black_ruea.svg',
   },
   {
+    // โคนดำตัวที่ 1
     id: 'black-khon-1',
     name: 'Khon',
     image: '/chesses/black_khon.svg',
   },
   {
+    // โคนดำตัวที่ 2
     id: 'black-khon-2',
     name: 'Khon',
     image: '/chesses/black_khon.svg',
   },
+  // ใช้ array spread operator สร้างอาเรย์ของหมากเบี้ยทั้ง 8 ตัว
   ...Array.from({
     length: 8,
   }).map((_, i) => ({
@@ -113,6 +138,7 @@ const blackPieces = [
   })),
 ]
 
+// ค่าคงที่สำหรับตำแหน่งหมากเริ่มต้นบนกระดาน
 const defaultChessBoard = [
   [
     'black-ruea-1',
@@ -217,7 +243,6 @@ export default function Home() {
   const [eatablePositions, setEatablePositions] = useState<
     Array<Array<number>>
   >([])
-
   // state: ตาเดินของสีขาวหรือดำ
   const [turn, setTurn] = useState<'WHITE' | 'BLACK'>(
     'WHITE',
@@ -225,26 +250,41 @@ export default function Home() {
 
   // effect: when the chess board is changed,
   // change chessBoardHistory
+  // effect: เมื่อ chessBoard มีการเปลี่ยนแปลง ให้เพิ่ม chessBoard ลงใน chessBoardHistory
   useEffect(() => {
+    // ถ้ายังไม่มีประวัติการเดินหมาก ให้สร้างจาก chessBoard ที่มีอยู่
+    // ถ้ามีประวัติการเดินหมากแล้ว ให้เพิ่ม chessBoard ลงในประวัติการเดินหมาก
     const newChessBoardHistory = chessBoardHistory
       ? [...chessBoardHistory, chessBoard]
       : [chessBoard]
+    // เซ็ต chessBoardHistory ใหม่
     setChessBoardHistory(newChessBoardHistory)
+    // dependency: ถ้า chessBoard มีการเปลี่ยนแปลง
   }, [chessBoard])
 
   // handler: reset the chessboard
+  // handler: ล้างประวัติการเดินหมากทั้งหมด
   const handleResetChessBoard = useCallback(() => {
+    // เซ็ต chessBoard กลับไปเป็นตำแหน่งเริ่มต้นด้วยการใช้ spread operator (...)
     setChessBoard([...defaultChessBoard])
+    // เซ็ต chessBoardHistory กลับไปเป็น null
     setChessBoardHistory(null)
+    // ลบประวัติการเดินหมากออกจาก local storage (ค่าที่เก็บไว้ในเบราว์เซอร์มือถือ/คอม)
     localStorage.removeItem('chessBoardHistory')
+    // dependency: ไม่มี
   }, [])
 
   // handler: save the chessbord history to local storage
+  // handler: บันทึกประวัติการเดินหมากลงใน local storage
   const handleSaveChessBoardHistory = useCallback(() => {
+    // บันทึกประวัติการเดินหมากลงใน local storage โดยใช้ชื่อ chessBoardHistory
+    // แปลงเป็น string ก่อนเพราะ local storage รองรับเฉพาะ string
+    // ด้วย JSON.stringify
     localStorage.setItem(
       'chessBoardHistory',
       JSON.stringify(chessBoardHistory),
     )
+    // dependency: chessBoardHistory จะได้ใช้ค่าล่าสุดเสมอ
   }, [chessBoardHistory])
 
   // handler: load the chessbord history from local storage
