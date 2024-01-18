@@ -676,329 +676,380 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${inter.className}`}>
-        <Typography.Title
-          level={1}
-          style={{
-            color: '#fff',
-          }}>
-          หมากรุกไทย
-        </Typography.Title>
-        <Typography.Title
-          level={4}
-          style={{
-            margin: 0,
-            color: '#fff',
-          }}>
-          {`ตาเดิน: ${turn === 'WHITE' ? 'ขาว' : 'ดำ'}`}
-        </Typography.Title>
-        <Typography.Title
-          level={4}
-          style={{
-            margin: 0,
-            color: '#fff',
-          }}>
-          {`สีของคุณ: ${
-            yourColor === 'WHITE' ? 'ขาว' : 'ดำ'
-          }`}
-        </Typography.Title>
-        <Radio.Group
-          value={yourColor}
-          onChange={(e) => {
-            setYourColor(e.target.value)
-          }}>
-          <Radio
-            value="WHITE"
+        <Row>
+          {/* เฮดเดอร์ */}
+          <Col
+            span={24}
             style={{
-              color: '#fff',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
             }}>
-            ขาว
-          </Radio>
-          <Radio
-            value="BLACK"
+            <Typography.Title
+              level={1}
+              style={{
+                color: '#fff',
+              }}>
+              หมากรุกไทย
+            </Typography.Title>
+          </Col>
+
+          {/* รายละเอียดบนกระดาน */}
+          <Col
+            span={24}
             style={{
-              color: '#fff',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
             }}>
-            ดำ
-          </Radio>
-        </Radio.Group>
-        <Typography.Title
-          level={4}
-          style={{
-            margin: 0,
-            color: '#fff',
-          }}>
-          {`หมากที่ถูกเลือก: ${selectedPieceId}`}
-        </Typography.Title>
-        <Typography.Title
-          level={4}
-          style={{
-            margin: 0,
-            color: '#fff',
-          }}>
-          {`ช่องที่เดินได้: ${JSON.stringify(
-            moveablePositions,
-          )}`}
-        </Typography.Title>
-        <Typography.Title
-          level={4}
-          style={{
-            margin: 0,
-            color: '#fff',
-          }}>
-          {`ช่องที่กินได้: ${JSON.stringify(
-            eatablePositions,
-          )}`}
-        </Typography.Title>
-
-        <div
-          style={{
-            width: 640,
-            backgroundColor: '#fff',
-            border: '1px solid #000',
-
-            // rotate the chessboard according to your color, your color is always at the bottom
-            transform:
-              yourColor === 'WHITE'
-                ? 'rotate(0deg)'
-                : 'rotate(180deg)',
-          }}>
-          {Array.from({
-            length: 8,
-          }).map((_, i) => (
-            <Row key={i}>
-              {Array.from({
-                length: 8,
-              }).map((_, j) => {
-                // convert to chess notation
-                const letter = String.fromCharCode(
-                  97 + j,
-                ).toUpperCase()
-
-                // get image of the piece
-                const pieceId = chessBoard[i][j]
-                  ? chessBoard[i][j]
-                  : null
-
-                // get the piece object
-                const pieceObject = pieceId
-                  ? whitePieces.find(
-                      (item) => item && item.id === pieceId,
-                    ) ||
-                    blackPieces.find(
-                      (item) => item && item.id === pieceId,
-                    )
-                  : null
-
-                // check if the piece is at its turn
-                const isPieceAtTurn =
-                  pieceObject &&
-                  turn.toLowerCase() ===
-                    (pieceObject.id.includes('white')
-                      ? 'white'
-                      : 'black')
-
-                // check if yourTurn
-                // ตรวจสอบว่าเป็นตาของคุณหรือไม่
-                const isYourTurn =
-                  yourColor &&
-                  turn.toLowerCase() ===
-                    yourColor.toLowerCase()
-
-                // check if the position is moveable
-                let isMoveablePosition = false
-                if (moveablePositions.length > 0) {
-                  isMoveablePosition =
-                    moveablePositions.some(
-                      (item) =>
-                        item[0] === i && item[1] === j,
-                    )
-                }
-
-                // check if the position is eatable
-                let isEatablePosition = false
-                if (eatablePositions.length > 0) {
-                  isEatablePosition = eatablePositions.some(
-                    (item) =>
-                      item[0] === i && item[1] === j,
-                  )
-                }
-
-                return (
-                  <Col
-                    key={`${letter}-${8 - i}`}
-                    span={3}
-                    style={{
-                      // if the piece is selected, add a bigger dashed border
-                      border:
-                        pieceObject &&
-                        selectedPieceId === pieceObject.id
-                          ? '4px dashed #000'
-                          : '2px solid #000',
-
-                      height: 80,
-                      width: 80,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-
-                      // add shadow if the piece is selected
-                      boxShadow:
-                        pieceObject &&
-                        selectedPieceId === pieceObject.id
-                          ? '0 0 10px 5px #000'
-                          : '',
-                    }}>
-                    {pieceObject && (
-                      <Image
-                        preview={false}
-                        alt="chess"
-                        // if the piece is selected, make it bigger
-                        width={
-                          selectedPieceId === pieceObject.id
-                            ? 80
-                            : 66
-                        }
-                        height={
-                          selectedPieceId === pieceObject.id
-                            ? 80
-                            : 66
-                        }
-                        src={pieceObject.image}
-                        style={{
-                          // shows the cursor if the piece is at its turn
-                          cursor: isPieceAtTurn
-                            ? 'pointer'
-                            : '',
-
-                          // rotate the chessboard according to your color, your color is always at the bottom
-                          transform:
-                            yourColor === 'WHITE'
-                              ? 'rotate(0deg)'
-                              : 'rotate(180deg)',
-
-                          // shows animation if the piece is at its turn
-                          // แสดง animation ถ้าเป็นตาของหมากที่ถูกเลือก
-                          animation:
-                            !selectedPieceId &&
-                            isPieceAtTurn
-                              ? yourColor === 'WHITE'
-                                ? 'pieceMoveable 2s linear infinite'
-                                : 'pieceMoveableRotate 2s linear infinite'
-                              : '',
-                        }}
-                        onClick={() => {
-                          if (!isPieceAtTurn) return
-
-                          // ถ้าไม่ใช่ตาของคุณ ไม่ต้องทำอะไร
-                          if (!isYourTurn) return
-
-                          // if click on the same piece, deselect it
-                          if (
-                            selectedPieceId ===
-                            pieceObject.id
-                          ) {
-                            setSelectedPieceId(null)
-                            setMoveablePositions([])
-                            setEatablePositions([])
-                            return
-                          }
-
-                          handleSelectPiece(pieceObject.id)
-                          handleNewMovablePositions(
-                            pieceObject.id,
-                          )
-                        }}
-                      />
-                    )}
-                    {
-                      // if the position is moveable, add a border
-                      isMoveablePosition && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            height: 40,
-                            width: 40,
-                            borderRadius: '50%',
-                            backgroundColor:
-                              'rgba(114,114,114,.5)',
-                            cursor: 'pointer',
-                          }}
-                          onClick={() => {
-                            handleMovePiece([i, j])
-                          }}
-                        />
-                      )
-                    }
-                    {
-                      // if the position is eatable, add a border
-                      isEatablePosition && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            height: 66,
-                            width: 66,
-                            borderRadius: '50%',
-                            backgroundColor:
-                              'rgba(0,255,0,.5)',
-                            cursor: 'pointer',
-                          }}
-                          onClick={() => {
-                            handleEatPiece([i, j])
-                          }}
-                        />
-                      )
-                    }
-                    {/* {<div>{`${i},${j}`}</div>} */}
-                  </Col>
-                )
-              })}
-            </Row>
-          ))}
-        </div>
-
-        {/* Reset, Save & Load chessboard */}
-        <div
-          style={{
-            width: 640,
-            border: '1px solid #000',
-          }}>
-          <Space style={{ margin: '1rem' }}>
-            <Button onClick={() => handleResetChessBoard()}>
-              Reset
-            </Button>
-            <Button
-              onClick={() => handleSaveChessBoardHistory()}>
-              Save
-            </Button>
-            <Button
-              onClick={() => handleLoadChessBoardHistory()}>
-              Load
-            </Button>
-          </Space>
-          <Typography.Title
-            level={4}
-            style={{
-              margin: 0,
-              color: '#fff',
-            }}>
-            History
-          </Typography.Title>
-          {
-            // show the history
-            chessBoardHistory &&
-              chessBoardHistory.map((item, i) => (
-                <Typography.Title
-                  key={i}
-                  level={5}
+            <div
+              style={{
+                width: 640,
+              }}>
+              <Typography.Title
+                level={4}
+                style={{
+                  margin: 0,
+                  color: '#fff',
+                }}>
+                {`ตาเดิน: ${
+                  turn === 'WHITE' ? 'ขาว' : 'ดำ'
+                }`}
+              </Typography.Title>
+              <Typography.Title
+                level={4}
+                style={{
+                  margin: 0,
+                  color: '#fff',
+                }}>
+                {`สีของคุณ: ${
+                  yourColor === 'WHITE' ? 'ขาว' : 'ดำ'
+                }`}
+              </Typography.Title>
+              <Radio.Group
+                value={yourColor}
+                onChange={(e) => {
+                  setYourColor(e.target.value)
+                }}>
+                <Radio
+                  value="WHITE"
                   style={{
-                    margin: 0,
                     color: '#fff',
                   }}>
-                  {JSON.stringify(item)}
-                </Typography.Title>
-              ))
-          }
-        </div>
+                  ขาว
+                </Radio>
+                <Radio
+                  value="BLACK"
+                  style={{
+                    color: '#fff',
+                  }}>
+                  ดำ
+                </Radio>
+              </Radio.Group>
+              <Typography.Title
+                level={4}
+                style={{
+                  margin: 0,
+                  color: '#fff',
+                }}>
+                {`หมากที่ถูกเลือก: ${selectedPieceId}`}
+              </Typography.Title>
+              <Typography.Title
+                level={4}
+                style={{
+                  margin: 0,
+                  color: '#fff',
+                }}>
+                {`ช่องที่เดินได้: ${JSON.stringify(
+                  moveablePositions,
+                )}`}
+              </Typography.Title>
+              <Typography.Title
+                level={4}
+                style={{
+                  margin: 0,
+                  color: '#fff',
+                }}>
+                {`ช่องที่กินได้: ${JSON.stringify(
+                  eatablePositions,
+                )}`}
+              </Typography.Title>
+            </div>
+          </Col>
+
+          {/* กระดาน  */}
+          <Col
+            span={24}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}>
+            <div
+              style={{
+                width: 640,
+                backgroundColor: '#fff',
+                border: '1px solid #000',
+
+                // rotate the chessboard according to your color, your color is always at the bottom
+                transform:
+                  yourColor === 'WHITE'
+                    ? 'rotate(0deg)'
+                    : 'rotate(180deg)',
+              }}>
+              {Array.from({
+                length: 8,
+              }).map((_, i) => (
+                <Row key={i}>
+                  {Array.from({
+                    length: 8,
+                  }).map((_, j) => {
+                    // convert to chess notation
+                    const letter = String.fromCharCode(
+                      97 + j,
+                    ).toUpperCase()
+
+                    // get image of the piece
+                    const pieceId = chessBoard[i][j]
+                      ? chessBoard[i][j]
+                      : null
+
+                    // get the piece object
+                    const pieceObject = pieceId
+                      ? whitePieces.find(
+                          (item) =>
+                            item && item.id === pieceId,
+                        ) ||
+                        blackPieces.find(
+                          (item) =>
+                            item && item.id === pieceId,
+                        )
+                      : null
+
+                    // check if the piece is at its turn
+                    const isPieceAtTurn =
+                      pieceObject &&
+                      turn.toLowerCase() ===
+                        (pieceObject.id.includes('white')
+                          ? 'white'
+                          : 'black')
+
+                    // check if yourTurn
+                    // ตรวจสอบว่าเป็นตาของคุณหรือไม่
+                    const isYourTurn =
+                      yourColor &&
+                      turn.toLowerCase() ===
+                        yourColor.toLowerCase()
+
+                    // check if the position is moveable
+                    let isMoveablePosition = false
+                    if (moveablePositions.length > 0) {
+                      isMoveablePosition =
+                        moveablePositions.some(
+                          (item) =>
+                            item[0] === i && item[1] === j,
+                        )
+                    }
+
+                    // check if the position is eatable
+                    let isEatablePosition = false
+                    if (eatablePositions.length > 0) {
+                      isEatablePosition =
+                        eatablePositions.some(
+                          (item) =>
+                            item[0] === i && item[1] === j,
+                        )
+                    }
+
+                    return (
+                      <Col
+                        key={`${letter}-${8 - i}`}
+                        span={3}
+                        style={{
+                          // if the piece is selected, add a bigger dashed border
+                          border:
+                            pieceObject &&
+                            selectedPieceId ===
+                              pieceObject.id
+                              ? '4px dashed #000'
+                              : '2px solid #000',
+
+                          height: 80,
+                          width: 80,
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+
+                          // add shadow if the piece is selected
+                          boxShadow:
+                            pieceObject &&
+                            selectedPieceId ===
+                              pieceObject.id
+                              ? '0 0 10px 5px #000'
+                              : '',
+                        }}>
+                        {pieceObject && (
+                          <Image
+                            preview={false}
+                            alt="chess"
+                            // if the piece is selected, make it bigger
+                            width={
+                              selectedPieceId ===
+                              pieceObject.id
+                                ? 80
+                                : 66
+                            }
+                            height={
+                              selectedPieceId ===
+                              pieceObject.id
+                                ? 80
+                                : 66
+                            }
+                            src={pieceObject.image}
+                            style={{
+                              // shows the cursor if the piece is at its turn
+                              cursor: isPieceAtTurn
+                                ? 'pointer'
+                                : '',
+
+                              // rotate the chessboard according to your color, your color is always at the bottom
+                              transform:
+                                yourColor === 'WHITE'
+                                  ? 'rotate(0deg)'
+                                  : 'rotate(180deg)',
+
+                              // shows animation if the piece is at its turn
+                              // แสดง animation ถ้าเป็นตาของหมากที่ถูกเลือก
+                              animation:
+                                !selectedPieceId &&
+                                isPieceAtTurn
+                                  ? yourColor === 'WHITE'
+                                    ? 'pieceMoveable 2s linear infinite'
+                                    : 'pieceMoveableRotate 2s linear infinite'
+                                  : '',
+                            }}
+                            onClick={() => {
+                              if (!isPieceAtTurn) return
+
+                              // ถ้าไม่ใช่ตาของคุณ ไม่ต้องทำอะไร
+                              if (!isYourTurn) return
+
+                              // if click on the same piece, deselect it
+                              if (
+                                selectedPieceId ===
+                                pieceObject.id
+                              ) {
+                                setSelectedPieceId(null)
+                                setMoveablePositions([])
+                                setEatablePositions([])
+                                return
+                              }
+
+                              handleSelectPiece(
+                                pieceObject.id,
+                              )
+                              handleNewMovablePositions(
+                                pieceObject.id,
+                              )
+                            }}
+                          />
+                        )}
+                        {
+                          // if the position is moveable, add a border
+                          isMoveablePosition && (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                height: 40,
+                                width: 40,
+                                borderRadius: '50%',
+                                backgroundColor:
+                                  'rgba(114,114,114,.5)',
+                                cursor: 'pointer',
+                              }}
+                              onClick={() => {
+                                handleMovePiece([i, j])
+                              }}
+                            />
+                          )
+                        }
+                        {
+                          // if the position is eatable, add a border
+                          isEatablePosition && (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                height: 66,
+                                width: 66,
+                                borderRadius: '50%',
+                                backgroundColor:
+                                  'rgba(0,255,0,.5)',
+                                cursor: 'pointer',
+                              }}
+                              onClick={() => {
+                                handleEatPiece([i, j])
+                              }}
+                            />
+                          )
+                        }
+                        {/* {<div>{`${i},${j}`}</div>} */}
+                      </Col>
+                    )
+                  })}
+                </Row>
+              ))}
+            </div>
+
+            {/* Reset, Save & Load chessboard */}
+            <div
+              style={{
+                width: 640,
+                border: '1px solid #000',
+              }}>
+              <Space style={{ margin: '1rem' }}>
+                <Button
+                  onClick={() => handleResetChessBoard()}>
+                  Reset
+                </Button>
+                <Button
+                  onClick={() =>
+                    handleSaveChessBoardHistory()
+                  }>
+                  Save
+                </Button>
+                <Button
+                  onClick={() =>
+                    handleLoadChessBoardHistory()
+                  }>
+                  Load
+                </Button>
+              </Space>
+              <Typography.Title
+                level={4}
+                style={{
+                  margin: 0,
+                  color: '#fff',
+                }}>
+                History
+              </Typography.Title>
+              {
+                // show the history
+                chessBoardHistory &&
+                  chessBoardHistory.map((item, i) => (
+                    <Typography.Title
+                      key={i}
+                      level={5}
+                      style={{
+                        margin: 0,
+                        color: '#fff',
+                      }}>
+                      {JSON.stringify(item)}
+                    </Typography.Title>
+                  ))
+              }
+            </div>
+          </Col>
+        </Row>
       </main>
     </>
   )
